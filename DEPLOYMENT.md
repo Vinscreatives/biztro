@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-1. PostgreSQL database (can use Vercel Postgres, Supabase, or any PostgreSQL provider)
+1. PostgreSQL database (can use Vercel Postgres, Supabase, PlanetScale, or any PostgreSQL provider)
 2. Vercel account (or your preferred hosting platform)
 3. GitHub repository
 

@@ -11,7 +11,6 @@ async function getProfile(username: string) {
         orderBy: { order: "asc" },
       },
       appearance: true,
-      onboarding: true,
     },
   })
 
@@ -33,7 +32,7 @@ export default async function ProfilePage({
   await prisma.analytics.create({
     data: {
       userId: user.id,
-      event: "profile_view",
+      eventType: "profile_view",
     },
   })
 

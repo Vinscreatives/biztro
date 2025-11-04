@@ -48,8 +48,12 @@ interface Link {
   id: string
   title: string
   url: string
-  icon?: string
+  icon?: string | null
+  isActive: boolean
   order: number
+  userId: string
+  createdAt: Date
+  updatedAt: Date
 }
 
 interface Service {
@@ -75,11 +79,13 @@ interface ContactInfo {
 }
 
 interface Appearance {
-  theme: string
-  bgColor?: string
-  textColor?: string
-  buttonStyle: string
-  font: string
+  id: string
+  userId: string
+  theme?: string | null
+  bgColor?: string | null
+  textColor?: string | null
+  buttonStyle?: string | null
+  font?: string | null
   showAvatar: boolean
   showSocials: boolean
   showBio?: boolean
@@ -89,14 +95,14 @@ interface Appearance {
 
 interface User {
   id: string
-  name?: string
-  username?: string
-  image?: string
+  name?: string | null
+  username?: string | null
+  image?: string | null
   // Onboarding data directly in user model
-  businessName?: string
-  businessTagline?: string
-  industry?: string
-  bio?: string
+  businessName?: string | null
+  businessTagline?: string | null
+  industry?: string | null
+  bio?: string | null
   services?: Service[]
   socialLinks?: SocialLink[]
   contactInfo?: ContactInfo
@@ -123,7 +129,7 @@ export default function PublicProfile({ user }: { user: User }) {
   const handleLinkClick = async (linkId: string, url: string) => {
     if (clickedLinks.has(linkId)) return
 
-    setClickedLinks(new Set([...clickedLinks, linkId]))
+    setClickedLinks(prev => new Set(prev).add(linkId))
 
     // Track click asynchronously, don't block navigation
     fetch("/api/analytics/click", {

@@ -7,7 +7,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -52,6 +52,7 @@ model Link {
   title     String
   url       String
   icon      String? // optional icon
+  isActive  Boolean  @default(true) // whether link is active/visible
   order     Int      @default(0)
   user      User     @relation(fields: [userId], references: [id])
   userId    String
@@ -89,6 +90,7 @@ model Analytics {
   userId    String
   link      Link?    @relation(fields: [linkId], references: [id])
   linkId    String?
+  eventType String   @default("link_click") // "link_click" or "profile_view"
   clickedAt DateTime @default(now())
   ip        String?
   userAgent String?
