@@ -1,0 +1,136 @@
+// ----------------------
+// Biztro MVP Schema
+// ----------------------
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ----------------------
+// USER
+// ----------------------
+
+model User {
+  id             String       @id @default(cuid())
+  name           String?
+  email          String?      @unique
+  emailVerified  DateTime?
+  image          String?
+
+  // Onboarding Data
+  businessName   String?
+  industry       String?
+  businessTagline String?
+  businessType   String?   //Freelancer | Startup | SME | Creator | Shop Owner | Other
+  primaryGoal    String?
+  website        String?
+  phone          String?
+
+  username       String?      @unique
+  bio            String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  links          Link[]
+  appearance     Appearance?
+  analytics      Analytics[]
+  accounts       Account[]
+  sessions       Session[]
+}
+
+// ----------------------
+// LINKS
+// ----------------------
+
+model Link {
+  id        String   @id @default(cuid())
+  title     String
+  url       String
+  icon      String? // optional icon
+  order     Int      @default(0)
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  clicks    Analytics[]
+}
+
+// ----------------------
+// APPEARANCE / THEMES
+// ----------------------
+
+model Appearance {
+  id         String  @id @default(cuid())
+  user       User    @relation(fields: [userId], references: [id])
+  userId     String  @unique
+
+  theme       String? // system presets
+  bgColor     String? // custom background if chosen
+  textColor   String?
+  buttonStyle String? // rounded / square / pill
+  font        String?
+  showAvatar  Boolean @default(true)
+  showSocials Boolean @default(true)
+}
+
+// ----------------------
+// ANALYTICS
+// ----------------------
+
+model Analytics {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  link      Link?    @relation(fields: [linkId], references: [id])
+  linkId    String?
+  clickedAt DateTime @default(now())
+  ip        String?
+  userAgent String?
+}
+
+// ----------------------
+// NEXTAUTH MODELS
+// ----------------------
+
+model Account {
+  id                 String   @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?
+  access_token       String?
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
