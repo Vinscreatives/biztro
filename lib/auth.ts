@@ -7,17 +7,6 @@ import { prisma } from "./prisma"
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
-    EmailProvider({
-      server: {
-        host: process.env.SMTP_HOST,
-        port: Number(process.env.SMTP_PORT),
-        auth: {
-          user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASSWORD,
-        },
-      },
-      from: process.env.SMTP_FROM,
-    }),
     CredentialsProvider({
       name: "Email",
       credentials: {
@@ -28,30 +17,35 @@ export const authOptions: NextAuthOptions = {
           return null
         }
 
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
-        })
+        try {
+          const user = await prisma.user.findUnique({
+            where: { email: credentials.email },
+          })
 
-        if (user) {
-          return {
-            id: user.id,
-            email: user.email,
-            name: user.name,
+          if (user) {
+            return {
+              id: user.id,
+              email: user.email,
+              name: user.name,
+            }
           }
-        }
 
-        // Create user if doesn't exist
-        const newUser = await prisma.user.create({
-          data: {
-            email: credentials.email,
-            username: credentials.email.split("@")[0],
-          },
-        })
+          // Create user if doesn't exist
+          const newUser = await prisma.user.create({
+            data: {
+              email: credentials.email,
+              username: credentials.email.split("@")[0],
+            },
+          })
 
-        return {
-          id: newUser.id,
-          email: newUser.email,
-          name: newUser.name,
+          return {
+            id: newUser.id,
+            email: newUser.email,
+            name: newUser.name,
+          }
+        } catch (error) {
+          console.error("Auth error:", error)
+          return null
         }
       },
     }),
@@ -76,5 +70,6 @@ export const authOptions: NextAuthOptions = {
       return session
     },
   },
+  debug: process.env.NODE_ENV === "development",
 }
 
