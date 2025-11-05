@@ -18,11 +18,16 @@ export const authOptions: NextAuthOptions = {
         }
 
         try {
+          // For signup, we expect both email and name
+          // For signin, we only need email (and possibly password in future)
+          const isSignup = credentials.name && credentials.name.trim() !== "";
+
           const user = await prisma.user.findUnique({
             where: { email: credentials.email },
           })
 
           if (user) {
+            // User exists - this is a sign in
             return {
               id: user.id,
               email: user.email,
@@ -30,19 +35,25 @@ export const authOptions: NextAuthOptions = {
             }
           }
 
-          // Create user if doesn't exist
-          const newUser = await prisma.user.create({
-            data: {
-              email: credentials.email,
-              username: credentials.email.split("@")[0],
-            },
-          })
+          if (isSignup) {
+            // User doesn't exist and this is a signup - create new user
+            const newUser = await prisma.user.create({
+              data: {
+                email: credentials.email,
+                name: credentials.name,
+                username: credentials.email.split("@")[0],
+              },
+            })
 
-          return {
-            id: newUser.id,
-            email: newUser.email,
-            name: newUser.name,
+            return {
+              id: newUser.id,
+              email: newUser.email,
+              name: newUser.name,
+            }
           }
+
+          // User doesn't exist and this isn't a signup attempt
+          return null
         } catch (error) {
           console.error("Auth error:", error)
           return null

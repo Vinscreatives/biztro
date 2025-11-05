@@ -12,7 +12,7 @@ import { Logo } from "@/components/ui/logo"
 import { useToast } from "@/hooks/use-toast"
 
 // Icons
-import { Mail, Lock, ArrowRight, Chrome } from "lucide-react"
+import { Mail, Lock, ArrowRight, Chrome, Home } from "lucide-react"
 
 export default function SignInPage() {
   const router = useRouter()
@@ -109,8 +109,17 @@ export default function SignInPage() {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.5 }}
-              className="text-center mb-8"
+              className="text-center mb-8 relative"
             >
+              {/* Back to home link */}
+              <Link
+                href="/"
+                className="absolute -top-2 left-0 flex items-center text-sm text-[#282828]/60 hover:text-[#282828] transition-colors duration-200 group"
+              >
+                <Home className="w-4 h-4 mr-1 group-hover:scale-110 transition-transform duration-200" />
+                Back to home
+              </Link>
+
               <div className="flex justify-center mb-6">
                 <Logo size="md" />
               </div>
