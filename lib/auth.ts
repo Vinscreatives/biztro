@@ -69,7 +69,7 @@ export const authOptions: NextAuthOptions = {
           return null
         } catch (error) {
           console.error("Auth error details:", error)
-          console.error("Error stack:", error.stack)
+          console.error("Error stack:", error instanceof Error ? error.stack : String(error))
           return null
         }
       },
