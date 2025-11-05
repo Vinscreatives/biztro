@@ -18,7 +18,8 @@ import {
   UserPlus,
   MessageSquare,
   ExternalLink,
-  Check
+  Check,
+  MoreHorizontal
 } from "lucide-react"
 import {
   Table,
