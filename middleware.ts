@@ -1,7 +1,18 @@
-import NextAuth from "next-auth"
-import { authOptions } from "@/lib/auth"
+import { withAuth } from "next-auth/middleware"
 
-export default NextAuth(authOptions)
+export default withAuth(
+  function middleware(req) {
+    // Add any custom logic here if needed
+  },
+  {
+    callbacks: {
+      authorized: ({ token }) => !!token
+    },
+    pages: {
+      signIn: "/auth/signin"
+    }
+  }
+)
 
 export const config = {
   matcher: ["/dashboard/:path*", "/onboarding"],
