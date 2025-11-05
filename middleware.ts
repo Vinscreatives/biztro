@@ -1,20 +1,12 @@
-import { withAuth } from "next-auth/middleware"
+// Middleware removed to avoid Vercel edge function size limits
+// Authentication protection is now handled in individual pages/components
+// using NextAuth's useSession or getServerSession hooks
 
-export default withAuth(
-  function middleware(req) {
-    // Add any custom logic here if needed
-  },
-  {
-    callbacks: {
-      authorized: ({ token }) => !!token
-    },
-    pages: {
-      signIn: "/auth/signin"
-    }
-  }
-)
+export default function middleware() {
+  // No middleware - authentication handled per-page
+}
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/onboarding"],
+  matcher: [], // No routes protected by middleware
 }
 
