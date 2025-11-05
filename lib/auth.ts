@@ -19,16 +19,25 @@ export const authOptions: NextAuthOptions = {
         }
 
         try {
+          console.log("Auth attempt for:", credentials.email)
+          console.log("Name provided:", credentials.name)
+          console.log("DATABASE_URL available:", !!process.env.DATABASE_URL)
+          console.log("DATABASE_URL starts with:", process.env.DATABASE_URL?.substring(0, 20))
+
           // For signup, we expect both email and name
           // For signin, we only need email (and possibly password in future)
           const isSignup = credentials.name && credentials.name.trim() !== "";
+          console.log("Is signup:", isSignup)
 
           const user = await prisma.user.findUnique({
             where: { email: credentials.email },
           })
 
+          console.log("User found:", !!user)
+
           if (user) {
             // User exists - this is a sign in
+            console.log("Existing user found, signing in")
             return {
               id: user.id,
               email: user.email,
@@ -38,6 +47,7 @@ export const authOptions: NextAuthOptions = {
 
           if (isSignup) {
             // User doesn't exist and this is a signup - create new user
+            console.log("Creating new user")
             const newUser = await prisma.user.create({
               data: {
                 email: credentials.email,
@@ -46,6 +56,7 @@ export const authOptions: NextAuthOptions = {
               },
             })
 
+            console.log("New user created:", newUser.id)
             return {
               id: newUser.id,
               email: newUser.email,
@@ -54,9 +65,11 @@ export const authOptions: NextAuthOptions = {
           }
 
           // User doesn't exist and this isn't a signup attempt
+          console.log("User not found and not a signup attempt")
           return null
         } catch (error) {
-          console.error("Auth error:", error)
+          console.error("Auth error details:", error)
+          console.error("Error stack:", error.stack)
           return null
         }
       },
